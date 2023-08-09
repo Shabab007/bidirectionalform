@@ -32,8 +32,6 @@ const MainComponent: React.FC = () => {
   };
 
   const handleYamlChange = (newYamlData: string) => {
-
-    console.log(newYamlData)
     setYamlData(newYamlData);
     updateFormData(newYamlData);
   };
@@ -45,14 +43,11 @@ const MainComponent: React.FC = () => {
 
   const updateFormData = (newYamlData: string) => {
     const newFormData = convertToFormData(newYamlData);
-    // console.log(newFormData)
     setFormData(newFormData);
   };
 
   const convertToYaml = (formData: string): string => {
     try {
-      // console.log(typeof formData);
-      // console.log(formData)
       if(formData){
        const formDataObj = JSON.parse(formData)
         const objectAsYaml = jsYaml.dump(formDataObj);
@@ -78,7 +73,6 @@ const MainComponent: React.FC = () => {
       return initialState;
     }
   };
-  // console.log(yamlData.trim() == "")
 
   return (
     <div>

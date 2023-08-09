@@ -58,7 +58,7 @@ const FormComponent: React.FC<{data:UserInfo, onFormChange:(value:string)=>void}
     setFormData(updatedFormData);
     onFormChange(JSON.stringify(updatedFormData));
   };
-  console.log(data)
+
   return (
     <form >
       <label>Name:</label>
