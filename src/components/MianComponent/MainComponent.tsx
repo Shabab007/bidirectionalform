@@ -1,28 +1,38 @@
 'use client'
 
 import React, { useState } from 'react';
-import jsYaml from 'js-yaml'; // Import the js-yaml library
+import * as jsYaml from 'js-yaml'; // Import the js-yaml library
 import FormComponent from '../FormComponent/FormComponent';
 import dynamic from 'next/dynamic';
 
 const EditorComponent = dynamic(() => import('../MonacoComponent/MonacoComponent'), { ssr: false });
 
-interface FormData {
-    formData: string;
-    // Add more properties as needed
+const initialState={
+  user_info:{
+    name: '',
+    age: 0,
+    email: '',
+    address: {
+      street: '',
+      city: '',
+      state: '',
+      zip_code: '',
+    }
   }
+}
 
 const MainComponent: React.FC = () => {
-  const [formData, setFormData] = useState('');
+  const [formData, setFormData] = useState<UserInfo>(initialState);
   const [yamlData, setYamlData] = useState('');
 
   const handleFormChange = (newFormData: string) => {
-    console.log(newFormData)
-    setFormData(newFormData);
+    // console.log(newFormData)
+    setFormData(JSON.parse(newFormData));
     updateYamlData(newFormData);
   };
 
   const handleYamlChange = (newYamlData: string) => {
+
     console.log(newYamlData)
     setYamlData(newYamlData);
     updateFormData(newYamlData);
@@ -30,47 +40,49 @@ const MainComponent: React.FC = () => {
 
   const updateYamlData = (newFormData: string) => {
     const newYamlData = convertToYaml(newFormData);
-    console.log(undefined)
     setYamlData(newYamlData);
   };
 
   const updateFormData = (newYamlData: string) => {
     const newFormData = convertToFormData(newYamlData);
-    console.log(newFormData)
+    // console.log(newFormData)
     setFormData(newFormData);
   };
 
   const convertToYaml = (formData: string): string => {
     try {
-      // Split the formData into lines
-    const formDataLines = formData.split('\n');
-
-    // Remove empty lines and whitespace from each line
-    const trimmedLines = formDataLines.filter(line => line.trim() !== '');
-
-    // Join the trimmed lines with line breaks
-    const trimmedFormData = trimmedLines.join('\n');
-
-      return formData;
+      // console.log(typeof formData);
+      // console.log(formData)
+      if(formData){
+       const formDataObj = JSON.parse(formData)
+        const objectAsYaml = jsYaml.dump(formDataObj);
+        return objectAsYaml;
+      }
+      else{
+        return ""
+      }
     } catch (error) {
       console.error('Error converting to YAML:', error);
       return '';
     }
   };
 
-  const convertToFormData = (yamlData: string): string => {
+  const convertToFormData = (yamlData: string): UserInfo => {
     try {
-      return yamlData || "";
+      
+      const data = jsYaml.load(yamlData) as UserInfo ;
+      console.log(data)
+      return data || initialState;
     } catch (error) {
       console.error('Error converting from YAML:', error);
-      return '';
+      return initialState;
     }
   };
-  console.log(yamlData.trim() == "")
+  // console.log(yamlData.trim() == "")
 
   return (
     <div>
-      <FormComponent formData={formData} onFormChange={handleFormChange} />
+      <FormComponent data={formData} onFormChange={handleFormChange} />
       <EditorComponent yamlData={yamlData} onYamlChange={handleYamlChange} />
     </div>
   );
